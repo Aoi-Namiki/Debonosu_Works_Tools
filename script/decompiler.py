@@ -29,14 +29,14 @@ def main():
         help="unluac.jar 路径（默认同目录）",
     )
     parser.add_argument(
-        "--decode",
-        action="store_true",
-        help="将 unluac 输出中的 \\ddd 八进制转义还原为字节，再按 --encoding 解码（默认关闭）",
-    )
-    parser.add_argument(
         "--encoding",
         default="shift_jis",
         help="--decode 时使用的文本编码（默认 shift_jis）",
+    )
+    parser.add_argument(
+        "--raw-escapes",
+        action="store_true",
+        help="不还原 \\ddd 转义（默认会按 --encoding 解码为可读文本）",
     )
     args = parser.parse_args()
 
@@ -58,7 +58,7 @@ def main():
         dst = output_dir / rel.with_suffix(".lua")
         try:
             text = run_unluac(jar, src)
-            if args.decode:
+            if not args.raw_escapes:
                 # unluac 输出里 \ddd 使用十进制转义；按十进制还原为原始字节，再按编码解码。
                 def decode_decimal_escapes(src_text: str, encoding: str) -> str:
                     buf = bytearray()

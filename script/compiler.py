@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """
-Compile Lua 5.1 source to bytecode using the bundled 32-bit lua5.1.dll.
-
-Run under 32-bit Python (e.g. .\\.venv32\\Scripts\\python.exe):
+使用内置的 32 位 lua5.1.dll 将 Lua 5.1 源码编译为字节码。
+需在 32 位 Python 下运行（例如 .\\.venv32\\Scripts\\python.exe）：
   python script/compiler.py input.lua -o output.luac
 """
 
@@ -66,7 +65,7 @@ def main():
     parser = argparse.ArgumentParser(description="Compile Lua 5.1 source to bytecode via lua5.1.dll")
     parser.add_argument("input", type=Path, help="path to .lua file or a directory containing .lua files")
     parser.add_argument("-o", "--out", type=Path, help="output file (when input is file) or output directory (when input is directory)")
-    parser.add_argument("--encoding", default="utf-8", help="text encoding for source files (default utf-8; use shift_jis for original game scripts)")
+    parser.add_argument("--encoding", default="shift_jis", help="text encoding for source files (default shift_jis)")
     args = parser.parse_args()
 
     if struct.calcsize("P") * 8 != 32:
@@ -93,7 +92,7 @@ def main():
         try:
             src_text = lua_path.read_text(encoding=args.encoding)
             bytecode = compile_lua(src_text, chunk_name=str(rel), encoding=args.encoding)
-        except Exception as exc:  # Keep going if a decompiled file is malformed
+        except Exception as exc:  # 反编译结果异常也继续处理其他文件
             failures.append((rel, str(exc)))
             print(f"[FAIL] {rel}: {exc}")
             continue
