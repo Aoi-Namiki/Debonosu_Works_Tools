@@ -199,26 +199,33 @@ def patch_file(in_path: Path, out_path: Path, mapping: Dict[int, str], src_enc: 
         out_path.write_bytes(data)
         return
 
-    endian, int_size, size_t_size, instr_size, number_size = read_header(data)
-    mv = memoryview(data)
-    out = bytearray()
-    out.extend(data[:12])
-    _ = process_proto(
-        mv,
-        endian,
-        int_size,
-        size_t_size,
-        instr_size,
-        number_size,
-        12,
-        mapping,
-        src_enc,
-        dst_enc,
-        out,
-        [-1],
-    )
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_bytes(bytes(out))
+    try:
+        endian, int_size, size_t_size, instr_size, number_size = read_header(data)
+        mv = memoryview(data)
+        out = bytearray()
+        out.extend(data[:12])
+        _ = process_proto(
+            mv,
+            endian,
+            int_size,
+            size_t_size,
+            instr_size,
+            number_size,
+            12,
+            mapping,
+            src_enc,
+            dst_enc,
+            out,
+            [-1],
+        )
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(bytes(out))
+    except UnicodeEncodeError as e:
+        # 捕获编码错误，提取导致问题的字符并打印，然后跳过该文件（复制原文件）
+        bad = e.object[e.start:e.end]
+        print(f"字符 '{bad}' 无法编码为目标编码 {dst_enc}，跳过文件 {out_path}")
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(data)
 
 
 def main() -> None:
