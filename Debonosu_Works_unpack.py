@@ -125,10 +125,9 @@ def extract_file(pak_bytes: bytes, entry, base_offset: int, out_dir: pathlib.Pat
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract game.pak contents")
-    parser.add_argument("pak", type=pathlib.Path, help="path to game.pak")
-    parser.add_argument("-o", "--out", type=pathlib.Path, default=pathlib.Path("extracted"), help="output directory")
-    parser.add_argument("--list", action="store_true", help="only list entries")
+    parser = argparse.ArgumentParser(description="Extract .pak file contents")
+    parser.add_argument("pak", type=pathlib.Path, help="input .pak file path")
+    parser.add_argument("out", type=pathlib.Path, help="output directory path")
     args = parser.parse_args()
 
     if args.pak.suffix.lower() != '.pak':
@@ -153,17 +152,6 @@ def main():
     print(f"Index: off=0x{meta['index_offset']:X}, compressed={meta['index_compressed']}, uncompressed={meta['index_uncompressed']}")
     print(f"Data section starts at 0x{meta['data_offset']:X}")
     print(f"Entries: {len(files)} files, {len(dirs)} directories")
-
-    if args.list:
-        for entry in entries:
-            if entry["type"] == "dir":
-                print(f"[DIR]  {entry['path']}")
-            else:
-                print(
-                    f"[FILE] {entry['path']}  off=0x{entry['offset']:X}  "
-                    f"csize={entry['compressed_size']}  usize={entry['uncompressed_size']}"
-                )
-        return
 
     for entry in files:
         extract_file(pak_bytes, entry, meta["data_offset"], args.out)
