@@ -312,6 +312,8 @@ def patch_file(in_path: Path, out_path: Path, mapping: Dict[int, str], src_enc: 
         end = e.end
         bad_char = obj[start:end]
         print(f"[FAIL] {in_path.name}: 无法编码字符 '{bad_char}' 使用编码 {e.encoding}")
+        with open("Errors.log", "a", encoding="utf-8") as log:
+            log.write(f"{in_path.name}: 无法编码字符 '{bad_char}' 使用编码 {e.encoding}\n")
         return
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_bytes(bytes(out))
