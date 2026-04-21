@@ -68,10 +68,10 @@ python Debonosu_Works_scb_extract_v2.py script.scb -o script.txt --src-encoding 
 #### 输出格式示例
 ```
 ○00001○ 原日文文本
-●00001○ 原日文文本
+●00001● 原日文文本
 
 ○00002○ 另一段文本
-●00002○ 另一段文本
+●00002● 另一段文本
 ```
 - `●` 行供编辑，`○` 行仅作参考。
 
