@@ -294,7 +294,8 @@ def default_batch_extract():
     out_dir.mkdir(parents=True, exist_ok=True)
     for scb in script_dir.rglob("*.scb"):
         rel = scb.relative_to(script_dir)
-        dst = (out_dir / rel).with_suffix(".txt")
+        # 修改点：保留原后缀 .scb 并追加 .txt，输出 xxx.scb.txt
+        dst = (out_dir / rel).with_suffix(rel.suffix + ".txt")
         src_enc = detect_encoding_for_file(scb)
         data = scb.read_bytes()
         endian, int_size, size_t_size, instr_size, number_size = read_header(data)
